@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kab4nsunrise/4-Sprint-Final-/internal/spentcalories"
+	"github.com/kab4nsunrise/-4-sprint-final-/internal/spentcalories"
 )
 
 const (
