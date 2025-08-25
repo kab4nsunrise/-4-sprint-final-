@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kab4nsunrise/-4-sprint-final-/internal/spentcalories"
+	"github.com/kab4nsunrise/sprint4-final/internal/spentcalories"
 )
 
 const (
@@ -18,12 +18,12 @@ const (
 func parsePackage(data string) (int, time.Duration, error) {
 	parts := strings.Split(data, ",")
 	if len(parts) != 2 {
-		return 0, 0, errors.New("invalid data format")
+		return 0, 0, fmt.Errorf("invalid data format: %q", data)
 	}
 
 	steps, err := strconv.Atoi(strings.TrimSpace(parts[0]))
 	if err != nil {
-		return 0, 0, fmt.Errorf("invalid steps format")
+		return 0, 0, fmt.Errorf("invalid steps format: %w", err)
 	}
 	if steps <= 0 {
 		return 0, 0, errors.New("steps count must be positive")
@@ -31,9 +31,8 @@ func parsePackage(data string) (int, time.Duration, error) {
 
 	duration, err := time.ParseDuration(strings.TrimSpace(parts[1]))
 	if err != nil {
-		return 0, 0, fmt.Errorf("invalid duration format")
+		return 0, 0, fmt.Errorf("invalid duration format: %w", err)
 	}
-
 	if duration <= 0 {
 		return 0, 0, errors.New("duration must be positive")
 	}
@@ -41,14 +40,10 @@ func parsePackage(data string) (int, time.Duration, error) {
 	return steps, duration, nil
 }
 
-func DayActionInfo(data string, weight, height float64) string {
+func DayActionInfo(data string, weight, height float64) (string, error) {
 	steps, duration, err := parsePackage(data)
 	if err != nil {
-		return ""
-	}
-
-	if steps <= 0 {
-		return ""
+		return "", err
 	}
 
 	distanceMeters := float64(steps) * stepLength
@@ -56,11 +51,11 @@ func DayActionInfo(data string, weight, height float64) string {
 
 	calories, err := spentcalories.WalkingSpentCalories(steps, weight, height, duration)
 	if err != nil {
-		return ""
+		return "", fmt.Errorf("calories calculation failed: %w", err)
 	}
 
 	return fmt.Sprintf(
 		"Количество шагов: %d.\nДистанция составила %.2f км.\nВы сожгли %.2f ккал.",
 		steps, distanceKm, calories,
-	)
+	), nil
 }
