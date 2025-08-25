@@ -98,13 +98,7 @@ func RunningSpentCalories(steps int, weight, height float64, duration time.Durat
 	return calories, nil
 }
 
-func WalkingSpentCalories(steps int, weight, height float64, duration time.Duration) (float64, error) {
-	if steps <= 0 || weight <= 0 || height <= 0 || duration <= 0 {
-		return 0, errors.New("invalid parameters: steps, weight, height, and duration must be positive")
-	}
-	speed := MeanSpeed(steps, height, duration)
-
-	calories := (WalkingCalorieC * weight * speed) * duration.Hours() * 10
+func WalkingSpentCalories(steps int, weight, height float64, duration time.Duration) float64{
 	
 	return calories, nil
 }
