@@ -99,3 +99,6 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 		calories,
 	), nil
 }
+
+
+
