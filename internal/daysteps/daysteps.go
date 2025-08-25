@@ -55,3 +55,6 @@ func DayActionInfo(data string, weight, height float64) string {
 		steps, distanceKm, calories,
 	)
 }
+
+
+
