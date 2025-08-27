@@ -7,64 +7,52 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kab4nsunrise/4-sprint-final--/internal/spentcalories"
+	"github.com/Yandex-Practicum/tracker/internal/spentcalories"
 )
 
 const (
-	stepLength = 0.65 // meters
-	mInKm      = 1000 // meters in kilometer
+	stepLength = 0.65
+	mInKm      = 1000
 )
 
 func parsePackage(data string) (int, time.Duration, error) {
 	parts := strings.Split(data, ",")
 	if len(parts) != 2 {
-		return 0, 0, fmt.Errorf("invalid data format: %q, expected 'steps,duration'", data)
+		return 0, 0, errors.New("invalid data format: expected 'steps,duration'")
 	}
 
-	stepsStr := strings.TrimSpace(parts[0])
-	steps, err := strconv.Atoi(stepsStr)
+	steps, err := strconv.Atoi(strings.TrimSpace(parts[0]))
 	if err != nil {
-		return 0, 0, fmt.Errorf("invalid steps format: %q, must be integer: %w", stepsStr, err)
+		return 0, 0, fmt.Errorf("invalid steps format: %w", err)
 	}
 	if steps <= 0 {
-		return 0, 0, fmt.Errorf("steps count must be positive, got %d", steps)
+		return 0, 0, errors.New("steps count must be positive")
 	}
 
-	durationStr := strings.TrimSpace(parts[1])
-	duration, err := time.ParseDuration(durationStr)
+	duration, err := time.ParseDuration(strings.TrimSpace(parts[1]))
 	if err != nil {
-		return 0, 0, fmt.Errorf("invalid duration format: %q, must be valid time duration: %w", durationStr, err)
+		return 0, 0, fmt.Errorf("invalid duration format: %w", err)
 	}
+
 	if duration <= 0 {
-		return 0, 0, fmt.Errorf("duration must be positive, got %v", duration)
+		return 0, 0, errors.New("duration must be positive")
 	}
 
 	return steps, duration, nil
 }
 
-func DayActionInfo(data string, weight, height float64) (string, error) {
-	if weight <= 0 {
-		return "", errors.New("weight must be positive")
-	}
-	if height <= 0 {
-		return "", errors.New("height must be positive")
-	}
-
+func DayActionInfo(data string, weight, height float64) string {
 	steps, duration, err := parsePackage(data)
 	if err != nil {
-		return "", fmt.Errorf("failed to parse data: %w", err)
+		return "Не удалось разобрать данные"
 	}
 
-	distanceMeters := float64(steps) * stepLength
-	distanceKm := distanceMeters / mInKm
+	distanceKm := float64(steps) * stepLength / mInKm
 
-	calories, err := spentcalories.WalkingSpentCalories(steps, weight, height, duration)
-	if err != nil {
-		return "", fmt.Errorf("calories calculation failed: %w", err)
-	}
+	calories := spentcalories.WalkingSpentCalories(steps, weight, height, duration)
 
 	return fmt.Sprintf(
 		"Количество шагов: %d.\nДистанция составила %.2f км.\nВы сожгли %.2f ккал.",
 		steps, distanceKm, calories,
-	), nil
+	)
 }
