@@ -5,7 +5,6 @@ import (
 )
 
 const (
-	cmInM        = 100
 	mInKm        = 1000
 	stepLength   = 0.65
 	walkingSpeed = 4.0
@@ -20,7 +19,6 @@ func WalkingSpentCalories(steps int, weight, height float64, duration time.Durat
 	distance := float64(steps) * stepLength / mInKm
 	speed := distance / duration.Hours()
 	met := speed / walkingSpeed * 4.0
-
 	calories := met * weight * duration.Hours() * caloriesRate
 
 	return calories
